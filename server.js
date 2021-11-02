@@ -12,6 +12,9 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 //parse incoming JSON data
 app.use(express.json());
+//allows use of items in /asset?
+app.use(express.static('public'));
+
 
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
@@ -73,7 +76,7 @@ function createNewAnimal(body, animalsArray) {
     );
     return animal;
 }
-
+//gets animals based on search 
 app.get('/api/animals', (req, res) => {
     let results = animals;
     if (req.query) {
@@ -81,7 +84,7 @@ app.get('/api/animals', (req, res) => {
     }
     res.json(results);
 });
-
+//gets animals based on id
 app.get('/api/animals/:id', (req, res) => {
     const result = findById(req.params.id, animals);
     if (result) {
@@ -90,7 +93,7 @@ app.get('/api/animals/:id', (req, res) => {
         res.sendStatus(404);
     }
 });
-
+//posts new animal
 app.post('/api/animals', (req, res) => {
     //set id based on next index of arr
     req.body.id = animals.length.toString();
@@ -103,7 +106,22 @@ app.post('/api/animals', (req, res) => {
         res.json(req.body);
     }
 });
-
+//serves index
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+//route to serve animals.html
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+//serves zoopkeepers html
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+//serves index if error in url 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+  });
 
 
 
